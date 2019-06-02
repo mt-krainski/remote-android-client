@@ -18,6 +18,7 @@ import android.widget.Toast;
 public class RemoteTextInput extends FrameLayout {
 
     private static final String TAG = "RemoteTextInput";
+    private BaseInputConnection baseInputConnection;
 
     public RemoteTextInput(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -38,15 +39,15 @@ public class RemoteTextInput extends FrameLayout {
 
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        BaseInputConnection fic = new BaseInputConnection(this, false);
-        outAttrs.actionLabel = null;
-        outAttrs.inputType = InputType.TYPE_NULL;
-        outAttrs.imeOptions = EditorInfo.IME_ACTION_DONE;
-        return fic;
+//        BaseInputConnection fic = new BaseInputConnection(this, false);
+//        outAttrs.actionLabel = null;
+//        outAttrs.inputType = InputType.TYPE_NULL;
+        return baseInputConnection;
     }
     public void init(){
         setFocusable(true);
         setFocusableInTouchMode(true);
+        baseInputConnection = new BaseInputConnection(this, false);
         setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -62,6 +63,10 @@ public class RemoteTextInput extends FrameLayout {
                             keyCode == KeyEvent.KEYCODE_APP_SWITCH
                     ) {
                         Log.d(TAG, "onKey: Special");
+                    } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+                        SocketConnector.sendValue("update_volume_relative: 10", getContext());
+                    } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+                        SocketConnector.sendValue("update_volume_relative: -10", getContext());
                     } else {
                         SocketConnector.sendValue(
                             "text_input: " + (char) event.getUnicodeChar(),
