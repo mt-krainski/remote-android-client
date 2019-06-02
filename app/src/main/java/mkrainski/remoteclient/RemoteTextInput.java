@@ -73,6 +73,7 @@ public class RemoteTextInput extends FrameLayout {
             }
         });
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);

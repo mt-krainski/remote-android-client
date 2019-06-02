@@ -1,6 +1,5 @@
 package mkrainski.remoteclient;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        remoteTextInput = findViewById(R.id.remoteTextInput);
+        remoteTextInput = findViewById(R.id.remote_text_input);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -63,14 +62,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
-                switch(id)
-                {
+                switch(id) {
                     case R.id.account:
-                        Toast.makeText(MainActivity.this, "My Account",Toast.LENGTH_SHORT).show();break;
+                        Toast.makeText(
+                            MainActivity.this,
+                            "My Account",
+                            Toast.LENGTH_SHORT
+                        ).show();
+                        break;
                     case R.id.settings:
-                        Toast.makeText(MainActivity.this, "Settings",Toast.LENGTH_SHORT).show();break;
+                        Toast.makeText(
+                            MainActivity.this,
+                            "Settings",
+                            Toast.LENGTH_SHORT
+                        ).show();
+                        break;
                     case R.id.mycart:
-                        Toast.makeText(MainActivity.this, "My Cart",Toast.LENGTH_SHORT).show();break;
+                        Toast.makeText(
+                            MainActivity.this,
+                            "My Cart",
+                            Toast.LENGTH_SHORT
+                        ).show();
+                        break;
                     default:
                         return true;
                 }
@@ -87,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         float x = event.getX();
         float y = event.getY();
         long now = System.currentTimeMillis();
+        Log.d(TAG, "onTouchEvent: " + event.getAction());
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 lastX = x;
@@ -96,13 +110,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (
-                    (abs(lastX - x) > MOUSE_MOVE_START_THRESHOLD) ||
-                    (abs(lastY - y) > MOUSE_MOVE_START_THRESHOLD)
+                        (abs(lastX - x) > MOUSE_MOVE_START_THRESHOLD) ||
+                                (abs(lastY - y) > MOUSE_MOVE_START_THRESHOLD)
                 ) {
                     if (now-lastMessageSentAt > MESSAGE_DELAY) {
                         SocketConnector.sendValue(
-                            "move_mouse_relative: " + (x - lastX) + ", " + (y - lastY),
-                            this
+                                "move_mouse_relative: " + (x - lastX) + ", " + (y - lastY),
+                                this
                         );
                         lastX = x;
                         lastY = y;
