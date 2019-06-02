@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <EditText
+    <mkrainski.remoteclient.RemoteTextInput
         android:id="@+id/remoteTextInput"
         android:layout_width="0dp"
         android:layout_height="54dp"
@@ -16,6 +16,7 @@
         android:ems="10"
         android:inputType="text"
         android:singleLine="true"
+        android:imeOptions="actionNone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
