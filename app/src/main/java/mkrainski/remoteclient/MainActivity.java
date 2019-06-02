@@ -100,7 +100,10 @@ public class MainActivity extends AppCompatActivity {
                     (abs(lastY - y) > MOUSE_MOVE_START_THRESHOLD)
                 ) {
                     if (now-lastMessageSentAt > MESSAGE_DELAY) {
-                        sendValue("move_mouse_relative: " + (x - lastX) + ", " + (y - lastY));
+                        SocketConnector.sendValue(
+                            "move_mouse_relative: " + (x - lastX) + ", " + (y - lastY),
+                            this
+                        );
                         lastX = x;
                         lastY = y;
                         lastMessageSentAt = now;
@@ -111,23 +114,14 @@ public class MainActivity extends AppCompatActivity {
             case MotionEvent.ACTION_UP:
                 if (!move) {
                     if (now - actionStartTime < LEFT_CLICK_LIMIT)
-                        sendValue("left_click");
+                        SocketConnector.sendValue("left_click", this);
                     else
-                        sendValue("right_click");
+                        SocketConnector.sendValue("right_click", this);
                 }
                 break;
         }
         return super.onTouchEvent(event);
     }
-
-    public boolean sendValue(String value){
-        Log.d(TAG, "sendValue: "+ value);
-        Intent intent = new Intent(this, SocketConnector.class);
-        intent.putExtra("message", value);
-        startService(intent);
-        return true;
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

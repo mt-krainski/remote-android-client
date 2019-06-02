@@ -19,7 +19,6 @@ public class RemoteTextInput extends FrameLayout {
 
     private static final String TAG = "RemoteTextInput";
 
-    String mText;
     public RemoteTextInput(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
@@ -48,19 +47,15 @@ public class RemoteTextInput extends FrameLayout {
     public void init(){
         setFocusable(true);
         setFocusableInTouchMode(true);
-        mText ="";
         setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
                     Log.d(TAG, "onKey: " + (char) event.getUnicodeChar());
                     if(keyCode == KeyEvent.KEYCODE_ENTER){
-                        sendValue("press_key: enter");
-                        Toast.makeText(getContext(), "The text is: " + mText , Toast.LENGTH_LONG).show();
-                        mText="";
+                        SocketConnector.sendValue("press_key: enter", getContext());
                         return true;
                     } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-                        sendValue("press_key: backspace");
-                        mText = mText.substring(0, mText.length()-1);
+                        SocketConnector.sendValue("press_key: backspace", getContext());
                     } else if (
                             keyCode == KeyEvent.KEYCODE_BACK ||
                             keyCode == KeyEvent.KEYCODE_HOME ||
@@ -68,8 +63,9 @@ public class RemoteTextInput extends FrameLayout {
                     ) {
                         Log.d(TAG, "onKey: Special");
                     } else {
-                        sendValue("text_input: " + (char) event.getUnicodeChar());
-                        mText = mText + (char) event.getUnicodeChar();
+                        SocketConnector.sendValue(
+                            "text_input: " + (char) event.getUnicodeChar(),
+                            getContext());
                         return true;
                     }
                 }
@@ -87,18 +83,6 @@ public class RemoteTextInput extends FrameLayout {
             if (!result)
                 imm.showSoftInput(this, InputMethodManager.SHOW_FORCED);
         }
-        return true;
-    }
-    public String getText(){
-        return mText;
-    }
-
-    public boolean sendValue(String value){
-        Log.d(TAG, "sendValue: "+ value);
-        Context context = getContext();
-        Intent intent = new Intent(context, SocketConnector.class);
-        intent.putExtra("message", value);
-        context.startService(intent);
         return true;
     }
 }

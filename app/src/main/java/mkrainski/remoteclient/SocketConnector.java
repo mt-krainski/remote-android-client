@@ -1,6 +1,7 @@
 package mkrainski.remoteclient;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -64,5 +65,13 @@ public class SocketConnector extends IntentService {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static boolean sendValue(String value, Context context){
+        Log.d(TAG, "sendValue: "+ value);
+        Intent intent = new Intent(context, SocketConnector.class);
+        intent.putExtra("message", value);
+        context.startService(intent);
+        return true;
     }
 }
