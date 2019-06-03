@@ -62,8 +62,10 @@ public class RemoteTextInput extends FrameLayout {
                         Log.d(TAG, "onKey: Special");
                     } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
                         SocketConnector.sendValue("update_volume_relative: 10", getContext());
+                        return true;
                     } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
                         SocketConnector.sendValue("update_volume_relative: -10", getContext());
+                        return true;
                     } else {
                         SocketConnector.sendValue(
                             "text_input: " + (char) event.getUnicodeChar(),
