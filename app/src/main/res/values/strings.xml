@@ -2,4 +2,7 @@
     <string name="app_name">RemoteClient</string>
     <string name="Open">Open</string>
     <string name="Close">Close</string>
+    <string name="preference_file_key">mkrainski.remoteclient.PREFERENCE_FILE_KEY</string>
+    <string name="saved_host">saved_host</string>
+    <string name="saved_port">saved_port</string>
 </resources>

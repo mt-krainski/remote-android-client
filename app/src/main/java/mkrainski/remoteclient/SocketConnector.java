@@ -18,6 +18,10 @@ public class SocketConnector extends IntentService {
     private static Socket connectionSocket = null;
     private static PrintWriter connectionOutput;
     private static BufferedReader connectionInput;
+    private static String newHost = null;
+    private static int newPort = 0;
+    private static String connectedHost = null;
+    private static int connectedPort = 0;
 
     public SocketConnector(){
         super("SocketConnector");
@@ -38,6 +42,10 @@ public class SocketConnector extends IntentService {
             e.printStackTrace();
             return false;
         }
+        connectedHost = host;
+        connectedPort = port;
+        newHost = null;
+        newPort = 0;
         Log.i(TAG, "startConnection: Connection established");
         return true;
     }
@@ -45,9 +53,26 @@ public class SocketConnector extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG, "onHandleIntent: ");
-        if (connectionSocket == null) {
-            startConnection("192.168.0.20", 9201);
+
+        if (connectionSocket==null && newHost!=null && newPort!=0) {
+            startConnection(newHost, newPort);
         }
+
+        if (newHost!=null && newPort!=0) {
+            if (!newHost.equals(connectedHost) || newPort != connectedPort) {
+                if (connectionSocket != null) {
+                    try {
+                        connectionSocket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                startConnection(newHost, newPort);
+            }
+        }
+
+        if (connectionSocket==null)
+            return;
 
         if (intent==null)
             return;
@@ -67,11 +92,17 @@ public class SocketConnector extends IntentService {
         }
     }
 
-    public static boolean sendValue(String value, Context context){
+    public static boolean sendValue(String value, Context context) {
         Log.d(TAG, "sendValue: "+ value);
         Intent intent = new Intent(context, SocketConnector.class);
         intent.putExtra("message", value);
         context.startService(intent);
         return true;
+    }
+
+    public static boolean sendValue(String value, Context context, String host, int port) {
+        newHost = host;
+        newPort = port;
+        return sendValue(value, context);
     }
 }

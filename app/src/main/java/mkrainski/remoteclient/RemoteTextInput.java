@@ -39,9 +39,6 @@ public class RemoteTextInput extends FrameLayout {
 
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-//        BaseInputConnection fic = new BaseInputConnection(this, false);
-//        outAttrs.actionLabel = null;
-//        outAttrs.inputType = InputType.TYPE_NULL;
         return baseInputConnection;
     }
     public void init(){
