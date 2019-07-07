@@ -25,14 +25,16 @@ public class MainActivity extends AppCompatActivity {
 
     private static final long LEFT_CLICK_LIMIT = 1000;
     private static final long MESSAGE_DELAY = 100;
-    private static final int MOUSE_MOVE_START_THRESHOLD = 2;
+    private static final int MOUSE_MOVE_START_THRESHOLD = 5;
     private String host = null;
     private int port = 0;
     private final String TAG = MainActivity.class.getName();
     private float lastX = 0.0f;
     private float lastY = 0.0f;
-    private float X_MUL = 2.0f;
-    private float Y_MUL = 2.0f;
+    private static final float X_MUL = 2.0f;
+    private static final float Y_MUL = 2.0f;
+    private static final float SCROLL_MUL = -1.0f;
+    private static final float SCREEN_SCROLL_LIMIT_RATIO = 0.85f;
     private boolean move = false;
     private long actionStartTime = 0;
     private RemoteTextInput remoteTextInput;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
     private NavigationView nv;
+    private boolean scroll = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,23 +170,36 @@ public class MainActivity extends AppCompatActivity {
             case MotionEvent.ACTION_DOWN:
                 lastX = x;
                 lastY = y;
+                if (x > screenWidth * SCREEN_SCROLL_LIMIT_RATIO) {
+                    scroll = true;
+                }
                 move = false;
                 actionStartTime = System.currentTimeMillis();
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (
                         (abs(lastX - x) > MOUSE_MOVE_START_THRESHOLD) ||
-                                (abs(lastY - y) > MOUSE_MOVE_START_THRESHOLD)
+                        (abs(lastY - y) > MOUSE_MOVE_START_THRESHOLD) ||
+                        move
                 ) {
                     if (now-lastMessageSentAt > MESSAGE_DELAY) {
-                        SocketConnector.sendValue(
-                            "move_mouse_relative: " +
-                                    X_MUL*(x - lastX) + ", " +
-                                    Y_MUL*(y - lastY),
-                            this,
-                                host,
-                                port
-                        );
+                        if (scroll)
+                            SocketConnector.sendValue(
+                                    "scroll_mouse: " +
+                                            SCROLL_MUL*(y - lastY),
+                                    this,
+                                    host,
+                                    port
+                            );
+                        else
+                            SocketConnector.sendValue(
+                                "move_mouse_relative: " +
+                                        X_MUL*(x - lastX) + ", " +
+                                        Y_MUL*(y - lastY),
+                                this,
+                                    host,
+                                    port
+                            );
                         lastX = x;
                         lastY = y;
                         lastMessageSentAt = now;
@@ -193,11 +209,16 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case MotionEvent.ACTION_UP:
                 if (!move) {
-                    if (now - actionStartTime < LEFT_CLICK_LIMIT)
-                        SocketConnector.sendValue("left_click", this, host, port);
-                    else
-                        SocketConnector.sendValue("right_click", this, host, port);
+                    if (scroll) {
+                        SocketConnector.sendValue("middle_click", this, host, port);
+                    } else {
+                        if (now - actionStartTime < LEFT_CLICK_LIMIT)
+                            SocketConnector.sendValue("left_click", this, host, port);
+                        else
+                            SocketConnector.sendValue("right_click", this, host, port);
+                    }
                 }
+                scroll = false;
                 break;
         }
         return super.onTouchEvent(event);

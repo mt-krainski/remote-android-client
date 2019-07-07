@@ -10,6 +10,35 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/remote_text_input"
+            >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.85"
+                android:layout_height="match_parent"
+                android:text=""
+                android:background="@android:color/transparent"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.15"
+                android:layout_height="match_parent"
+                android:text=""
+                android:background="@color/colorPrimary"
+                />
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/host_name"
             android:layout_width="wrap_content"
