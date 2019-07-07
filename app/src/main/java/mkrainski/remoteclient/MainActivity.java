@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = MainActivity.class.getName();
     private float lastX = 0.0f;
     private float lastY = 0.0f;
+    private float X_MUL = 2.0f;
+    private float Y_MUL = 2.0f;
     private boolean move = false;
     private long actionStartTime = 0;
     private RemoteTextInput remoteTextInput;
@@ -175,7 +177,9 @@ public class MainActivity extends AppCompatActivity {
                 ) {
                     if (now-lastMessageSentAt > MESSAGE_DELAY) {
                         SocketConnector.sendValue(
-                            "move_mouse_relative: " + (x - lastX) + ", " + (y - lastY),
+                            "move_mouse_relative: " +
+                                    X_MUL*(x - lastX) + ", " +
+                                    Y_MUL*(y - lastY),
                             this,
                                 host,
                                 port
