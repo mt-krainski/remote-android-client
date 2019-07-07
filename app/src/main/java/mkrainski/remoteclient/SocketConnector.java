@@ -27,7 +27,12 @@ public class SocketConnector extends IntentService {
         super("SocketConnector");
     }
 
-    public boolean startConnection(String host, int port){
+    public static void init(String host, int port){
+        newHost = host;
+        newPort = port;
+    }
+
+    public static boolean startConnection(String host, int port){
         try {
             connectionSocket = new Socket(host, port);
             connectionOutput = new PrintWriter(

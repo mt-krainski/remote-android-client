@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         if (host!=null && port!=0){
             String hostPort = host + ":" + port;
             hostNameView.setText(hostPort);
+            SocketConnector.init(host, port);
         }
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -79,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
 
         nv = findViewById(R.id.nv);
+
+        remoteTextInput.requestFocus();
 
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
