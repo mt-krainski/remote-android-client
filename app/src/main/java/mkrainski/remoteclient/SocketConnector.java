@@ -50,6 +50,17 @@ public class SocketConnector extends IntentService {
         return true;
     }
 
+    public static void closeConnection(){
+        if (connectionSocket != null) {
+            try {
+                connectionSocket.close();
+                connectionSocket = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG, "onHandleIntent: ");
@@ -60,13 +71,7 @@ public class SocketConnector extends IntentService {
 
         if (newHost!=null && newPort!=0) {
             if (!newHost.equals(connectedHost) || newPort != connectedPort) {
-                if (connectionSocket != null) {
-                    try {
-                        connectionSocket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                closeConnection();
                 startConnection(newHost, newPort);
             }
         }
