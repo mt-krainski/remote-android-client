@@ -59,11 +59,11 @@ public class SocketConnector extends IntentService {
         if (connectionSocket != null) {
             try {
                 connectionSocket.close();
-                connectionSocket = null;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        connectionSocket = null;
     }
 
     @Override
@@ -98,6 +98,7 @@ public class SocketConnector extends IntentService {
                     connectionSocket = null;
             } catch (IOException e) {
                 e.printStackTrace();
+                closeConnection();
             }
         }
     }
