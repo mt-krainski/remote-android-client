@@ -6,4 +6,5 @@
     <string name="saved_host">saved_host</string>
     <string name="saved_port">saved_port</string>
     <string name="host_name_initial">host:port</string>
+    <string name="keyboard">Keyboard</string>
 </resources>

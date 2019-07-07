@@ -36,7 +36,18 @@
             app:layout_constraintBottom_toTopOf="@id/host_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            />
+            >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/keyboard"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:textSize="20sp"/>
+
+        </mkrainski.remoteclient.RemoteTextInput>
 
     </android.support.constraint.ConstraintLayout>
 
