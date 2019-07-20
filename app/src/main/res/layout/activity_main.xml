@@ -4,11 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/material_grey">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/material_grey"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -49,6 +52,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            android:textColor="@color/white"
             android:text="@string/host_name_initial"
             />
 
@@ -86,6 +90,8 @@
         app:menu="@menu/navigation_menu"
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
+        android:textColor="@color/white"
+        android:background="@color/material_grey"
         android:id="@+id/nv">
 
     </android.support.design.widget.NavigationView>

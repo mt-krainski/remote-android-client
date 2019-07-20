@@ -24,7 +24,7 @@ import static java.lang.Math.abs;
 public class MainActivity extends AppCompatActivity {
 
     private static final long LEFT_CLICK_LIMIT = 1000;
-    private static final long MESSAGE_DELAY = 100;
+    private static int message_delay_ms = 10;
     private static final int MOUSE_MOVE_START_THRESHOLD = 5;
     private String host = null;
     private int port = 0;
@@ -55,8 +55,14 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSharedPreferences(
             getString(R.string.preference_file_key), MODE_PRIVATE);
 
-        host = sharedPref.getString(getString(R.string.saved_host), null);
-        port = sharedPref.getInt(getString(R.string.saved_port), 0);
+        try {
+            host = sharedPref.getString(getString(R.string.saved_host), null);
+            port = sharedPref.getInt(getString(R.string.saved_port), 0);
+            message_delay_ms = sharedPref.getInt(getString(R.string.saved_delay_ms), message_delay_ms);
+        } catch (ClassCastException e){
+            Log.e(TAG, "onCreate: ", e);
+        }
+
 
         remoteTextInput = findViewById(R.id.remote_text_input);
         hostNameView = findViewById(R.id.host_name);
@@ -96,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.enter_host_data:
                         enterHostDataAlert();
                         break;
+                    case R.id.enter_delay:
+                        enterDelayAlert();
+                        break;
                     default:
                         return true;
                 }
@@ -107,13 +116,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void enterHostDataAlert(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.DialogTheme);
         builder.setTitle("Enter hostname and port");
 
-        final String inputTemplate = "^\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+$";
+        final String ipInputTemplate =
+                "^([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}|(\\d{1,3}\\.){3}\\d{1,3}:\\d+$";
 
         // Set up the input
         final EditText input = new EditText(this);
+
+        input.setText(host + ":" + port);
         // Specify the type of input expected.
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
@@ -123,11 +135,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String input_text = input.getText().toString();
-                if (!input_text.matches(inputTemplate)){
+                if (!input_text.matches(ipInputTemplate)){
                     Toast.makeText(
-                        MainActivity.this,
-                        "Invalid input!",
-                        Toast.LENGTH_LONG
+                            MainActivity.this,
+                            "Invalid input!",
+                            Toast.LENGTH_LONG
                     ).show();
                     return;
                 }
@@ -141,6 +153,62 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString(getString(R.string.saved_host), host);
                 editor.putInt(getString(R.string.saved_port), port);
+                editor.apply();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void enterDelayAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.DialogTheme);
+        builder.setTitle("Enter delay between commands [ms]");
+
+        final String inputTemplate = "^\\d+$";
+
+        // Set up the input
+        final EditText input = new EditText(this);
+
+        input.setText(String.valueOf(message_delay_ms));
+        // Specify the type of input expected.
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String input_text = input.getText().toString();
+                if (!input_text.matches(inputTemplate)){
+                    Toast.makeText(
+                            MainActivity.this,
+                            "Please enter a valid integer.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                    return;
+                }
+
+                try {
+                    message_delay_ms = Integer.valueOf(input_text);
+                } catch (ClassCastException e){
+                    Toast.makeText(
+                            MainActivity.this,
+                            "Please enter a valid integer.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                    return;
+                }
+
+                SharedPreferences sharedPref = getSharedPreferences(
+                        getString(R.string.preference_file_key), MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putInt(getString(R.string.saved_delay_ms), message_delay_ms);
                 editor.apply();
             }
         });
@@ -182,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
                         (abs(lastY - y) > MOUSE_MOVE_START_THRESHOLD) ||
                         move
                 ) {
-                    if (now-lastMessageSentAt > MESSAGE_DELAY) {
+                    if (now-lastMessageSentAt > message_delay_ms) {
                         if (scroll)
                             SocketConnector.sendValue(
                                     "scroll_mouse: " +
